@@ -11,11 +11,6 @@ class TestPackageConan(ConanFile):
         cmake = CMake(self)
         cmake.configure()
         cmake.build()
-        for locale in ["en", "ru", "es"]:
-            directory = os.path.join(self.source_folder, locale, "LC_MESSAGES")
-            tools.mkdir(directory)
-            shutil.copy(os.path.join(self.source_folder, "po", locale, "conan.mo.workaround_git_ignore"),
-                        os.path.join(directory, "conan.mo"))
 
     def test(self):
         if not tools.cross_building(self.settings):
@@ -23,4 +18,3 @@ class TestPackageConan(ConanFile):
             for locale in ["en_US", "ru_RU", "es_ES"]:
                 with tools.environment_append({"LANG": locale}):
                     self.run("%s %s" % (bin_path, os.path.abspath(self.source_folder)), run_environment=True)
-
