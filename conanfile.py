@@ -1,7 +1,7 @@
 from conans import ConanFile, AutoToolsBuildEnvironment, VisualStudioBuildEnvironment, tools
 import os
 
-required_conan_version = ">=1.28.0"
+required_conan_version = ">=1.33.0"
 
 
 class GetTextConan(ConanFile):
@@ -67,9 +67,8 @@ class GetTextConan(ConanFile):
             self.build_requires("automake/1.16.3")
 
     def source(self):
-        tools.get(**self.conan_data["sources"][self.version])
-        extracted_dir = "gettext-" + self.version
-        os.rename(extracted_dir, self._source_subfolder)
+        tools.get(**self.conan_data["sources"][self.version],
+                  destination=self._source_subfolder, strip_root=True)
 
     def build(self):
         for patch in self.conan_data["patches"][self.version]:
