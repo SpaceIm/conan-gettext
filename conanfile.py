@@ -13,8 +13,16 @@ class GetTextConan(ConanFile):
     license = "GPL-3.0-or-later"
     settings = "os", "arch", "compiler", "build_type"
     exports_sources = ["patches/*.patch"]
-    options = {"shared": [True, False], "fPIC": [True, False], "threads": ["posix", "solaris", "pth", "windows", "disabled", "auto"]}
-    default_options = {"shared": False, "fPIC": True, "threads": "auto"}
+    options = {
+        "shared": [True, False],
+        "fPIC": [True, False],
+        "threads": [False, "posix", "solaris", "pth", "windows"],
+    }
+    default_options = {
+        "shared": False,
+        "fPIC": True,
+        "threads": "posix",
+    }
 
     @property
     def _source_subfolder(self):
@@ -35,15 +43,17 @@ class GetTextConan(ConanFile):
     def config_options(self):
         if self.settings.os == "Windows":
             del self.options.fPIC
+        # Default threads option
+        if self.settings.os == "Windows":
+            self.options.threads = "windows"
+        if self.settings.os == "Solaris":
+            self.options.threads = "solaris"
 
     def configure(self):
         if self.options.shared:
             del self.options.fPIC
         del self.settings.compiler.libcxx
         del self.settings.compiler.cppstd
-
-        if(self.options.threads == "auto"):
-            self.options.threads = { "Solaris": "solaris", "Windows": "windows" }.get(str(self.settings.os), "posix")
 
     def requirements(self):
         self.requires("libiconv/1.16")
@@ -74,7 +84,7 @@ class GetTextConan(ConanFile):
                 "--disable-csharp",
                 "--disable-libasprintf",
                 "--disable-curses",
-                "--disable-threads" if self.options.threads == "disabled" else ("--enable-threads=" + str(self.options.threads)),
+                "--enable-threads={}".format(self.options.threads) if bool(self.options.threads) else "--disable-threads",
                 "--with-libiconv-prefix=%s" % libiconv_prefix]
         build = None
         host = None
