@@ -48,7 +48,7 @@ class GetTextConan(ConanFile):
         # Default threads option
         if self.settings.os == "Windows":
             self.options.threads = "windows"
-        elif self.settings.os == "Solaris":
+        elif self.settings.os == "SunOS":
             self.options.threads = "solaris"
 
     def configure(self):
