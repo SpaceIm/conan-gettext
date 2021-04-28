@@ -11,8 +11,8 @@ class GetTextConan(ConanFile):
     url = "https://github.com/conan-io/conan-center-index"
     homepage = "https://www.gnu.org/software/gettext"
     license = "GPL-3.0-or-later"
+
     settings = "os", "arch", "compiler", "build_type"
-    exports_sources = ["patches/*.patch"]
     options = {
         "shared": [True, False],
         "fPIC": [True, False],
@@ -23,6 +23,8 @@ class GetTextConan(ConanFile):
         "fPIC": True,
         "threads": "posix",
     }
+
+    exports_sources = ["patches/**"]
 
     @property
     def _source_subfolder(self):
