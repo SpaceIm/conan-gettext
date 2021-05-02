@@ -1,6 +1,5 @@
 from conans import ConanFile, CMake, tools
 import os
-import shutil
 
 
 class TestPackageConan(ConanFile):
@@ -14,7 +13,9 @@ class TestPackageConan(ConanFile):
 
     def test(self):
         if not tools.cross_building(self.settings):
+            for utility in ["gettext", "ngettext", "msgcat", "msgmerge"]:
+                self.run("{} --version".format(utility), run_environment=True)
             bin_path = os.path.join("bin", "test_package")
             for locale in ["en_US", "ru_RU", "es_ES"]:
                 with tools.environment_append({"LANG": locale}):
-                    self.run("%s %s" % (bin_path, os.path.abspath(self.source_folder)), run_environment=True)
+                    self.run("{} {}".format(bin_path, os.path.abspath(self.source_folder)), run_environment=True)
